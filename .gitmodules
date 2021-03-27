@@ -1,0 +1,9 @@
+[submodule "projects/WalletAPIService"]
+	path = projects/WalletAPIService
+	url = https://github.com/adeoluwa-adebiyi/WalletAPIService
+[submodule "projects/WalletPaymentService"]
+	path = projects/WalletPaymentService
+	url = https://github.com/adeoluwa-adebiyi/WalletPaymentService
+[submodule "projects/WalletAPIServiceBackend"]
+	path = projects/WalletAPIServiceBackend
+	url = https://github.com/adeoluwa-adebiyi/WalletAPIServiceBackend

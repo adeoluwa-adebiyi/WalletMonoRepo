@@ -1,0 +1,12 @@
+{
+  "name": "WalletMonoRepo",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/adeoluwa-adebiyi/WalletMonoRepo",
+  "author": "adeoluwa-adebiyi <adeoluwaadebiyi@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "pull": "git submodule update --recursive init",
+    "checkout": "git submodule update --recursive"
+  }
+}
