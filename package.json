@@ -6,7 +6,8 @@
   "author": "adeoluwa-adebiyi <adeoluwaadebiyi@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "pull": "git submodule update --recursive init",
-    "checkout": "git submodule update --recursive"
+    "pull": "git submodule update --recursive --init",
+    "checkout": "git submodule update --recursive",
+    "launch": "docker-compose up"
   }
 }
