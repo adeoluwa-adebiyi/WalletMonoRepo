@@ -7,3 +7,6 @@
 [submodule "projects/WalletAPIServiceBackend"]
 	path = projects/WalletAPIServiceBackend
 	url = https://github.com/adeoluwa-adebiyi/WalletAPIServiceBackend
+[submodule "projects/WalletMonoKafkaService"]
+	path = projects/WalletMonoKafkaService
+	url = https://github.com/adeoluwa-adebiyi/WalletMonoKafkaService
