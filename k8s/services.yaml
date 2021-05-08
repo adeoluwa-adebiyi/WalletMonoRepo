@@ -1,0 +1,17 @@
+# https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: wallet-api-service
+  namespace: default
+spec:
+  selector:
+    app: wallet-api-service
+  type: NodePort
+  ports:
+  - name: wallet-api-service
+    protocol: TCP
+    port: 8000
+    targetPort: 80
+    nodePort: 30001
+---

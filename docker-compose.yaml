@@ -10,6 +10,8 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_PORT=9800
       - PGDATA=/var/lib/postgresql/data/pgdata
+    networks: 
+      - wallet_vpc
 
   # wallet_payment_db:
   #   image: postgres:13
@@ -17,21 +19,28 @@ services:
   #   envfiles:
   #     - "./projects/WalletPaymentService/.env"
 
-  app_event_bus:
-    image: bitnami/redis:latest
-    environment:
-      - REDIS_PASSWORD=admin1234
+  # app_event_bus:
+  #   image: bitnami/redis:latest
+  #   environment:
+  #     - REDIS_PASSWORD=admin1234
 
-  wallet_api_service:
-    build:
-      context: ./projects/WalletAPIService
-      dockerfile: Dockerfile
-    env_file:
-      - "./projects/WalletAPIService/.env"
-    depends_on:
-      - wallet_api_db
-      - app_event_bus
-    restart: always
+  # wallet_api_service:
+  #   build:
+  #     context: ./projects/WalletAPIService
+  #     dockerfile: Dockerfile
+  #   env_file:
+  #     - "./projects/WalletAPIService/.env"
+  #   depends_on:
+  #     - wallet_api_db
+  #     - app_event_bus
+  #   restart: always
 
-    volumes:
-      - ./projects/WalletAPIService:/app
+  #   volumes:
+  #     - ./projects/WalletAPIService:/app
+
+  #   networks: 
+  #     - wallet_vpc
+
+networks:
+  wallet_vpc:
+    external: true
