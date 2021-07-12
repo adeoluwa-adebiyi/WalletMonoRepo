@@ -9,5 +9,9 @@
     "pull": "git submodule update --recursive --init",
     "checkout": "git submodule update --recursive",
     "launch": "docker-compose up"
+  },
+  "dependencies": {
+    "kafkajs": "^1.15.0",
+    "mongoose": "^5.13.2"
   }
 }
