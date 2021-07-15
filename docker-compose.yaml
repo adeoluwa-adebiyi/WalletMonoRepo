@@ -22,6 +22,17 @@ services:
         ports:
           - "27017:27017"
 
+  wallet_payment_service_db:
+        image: mongo
+        restart: always
+        # environment:
+            # - MONGODB_PRIMARY_PORT_NUMBER=27117
+            # - MONGODB_PRIMARY_ROOT_PASSWORD=password123
+          #   MONGO_INITDB_ROOT_USERNAME: root
+          #   MONGO_INITDB_ROOT_PASSWORD: example
+        ports:
+          - "27117:27017"
+
 
   walletmono-kafka:
         image: confluentinc/cp-kafka:6.1.1
@@ -29,7 +40,7 @@ services:
             - KAFKA_ZOOKEEPER_CONNECT=walletmono-zookeeper:2181
             - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:29092
             - KAFKA_BROKER_ID=2
-            - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=3
+            - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
         depends_on: 
             - walletmono-zookeeper
         networks: 
