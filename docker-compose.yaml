@@ -33,6 +33,17 @@ services:
         ports:
           - "27117:27017"
 
+  wallet_finance_service_db:
+            image: mongo
+            restart: always
+            # environment:
+                # - MONGODB_PRIMARY_PORT_NUMBER=27117
+                # - MONGODB_PRIMARY_ROOT_PASSWORD=password123
+              #   MONGO_INITDB_ROOT_USERNAME: root
+              #   MONGO_INITDB_ROOT_PASSWORD: example
+            ports:
+              - "27217:27017"
+
 
   walletmono-kafka:
         image: confluentinc/cp-kafka:6.1.1
