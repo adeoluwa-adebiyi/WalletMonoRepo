@@ -8,6 +8,14 @@
   "scripts": {
     "pull": "git submodule update --recursive --init",
     "checkout": "git submodule update --recursive",
-    "launch": "docker-compose up"
+    "launch": "docker-compose up",
+    "finance":"cd projects/WalletFinanceService && yarn start",
+    "payment":"cd projects/WalletPaymentService && yarn start",
+    "api":"cd projects/WalletAPIService && yarn start",
+    "start": "yarn finance;yarn payment;yarn api"
+  },
+  "dependencies": {
+    "kafkajs": "^1.15.0",
+    "mongoose": "^5.13.2"
   }
 }
