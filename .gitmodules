@@ -13,3 +13,6 @@
 [submodule "projects/WalletFinanceService"]
 	path = projects/WalletFinanceService
 	url = https://github.com/adeoluwa-adebiyi/WalletFinanceService.git
+[submodule "projects/WalletTransferService"]
+	path = projects/WalletTransferService
+	url = http://github.com/adeoluwa-adebiyi/WalletTransferService.git
