@@ -7,11 +7,9 @@ metadata:
 spec:
   selector:
     app: wallet-api-service
-  type: NodePort
+  type: LoadBalancer
   ports:
   - name: wallet-api-service
     protocol: TCP
     port: 8000
-    targetPort: 80
-    nodePort: 30001
 ---

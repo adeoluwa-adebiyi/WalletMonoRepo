@@ -1,0 +1,19 @@
+# https://kubernetes.io/docs/concepts/services-networking/ingress/
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wallet-ingress
+  namespace: default
+spec:
+  rules:
+  - host: hexagon.com
+    http:
+      paths:
+      - path: /api/wallet/
+        pathType: Prefix
+        backend:
+          service:
+            name: wallet-api-service
+            port:
+              number: 8000
+---
