@@ -9,7 +9,7 @@ spec:
     app: wallet-api-service
   type: LoadBalancer
   ports:
-  - name: wallet-api-service
+  - name: wallet-api
     protocol: TCP
     port: 8000
 ---
@@ -22,10 +22,43 @@ metadata:
   namespace: default
 spec:
   selector:
-    app: wallet-api-db-service
+    app: wallet-api-db
   type: LoadBalancer
   ports:
-  - name: wallet-api-service
+  - name: wallet-api-db
     protocol: TCP
     port: 27017
+---
+
+# https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: wallet-kafka-service
+  namespace: default
+spec:
+  selector:
+    app: wallet-kafka
+  type: LoadBalancer
+  ports:
+  - name: wallet-kafka
+    protocol: TCP
+    port: 29092
+---
+
+
+# https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: wallet-zookeeper-service
+  namespace: default
+spec:
+  selector:
+    app: wallet-zookeeper
+  type: LoadBalancer
+  ports:
+  - name: wallet-zookeeper
+    protocol: TCP
+    port: 2181
 ---

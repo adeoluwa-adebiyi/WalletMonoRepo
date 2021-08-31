@@ -60,7 +60,7 @@ spec:
 
         ports:
         - containerPort:  27017
-          name:  wallet-api
+          # name:  wallet-api
         volumeMounts:
         - name: localtime
           mountPath: /etc/localtime
@@ -135,7 +135,7 @@ spec:
             value: "8000"
 
           - name: KAFKA_BOOTSTRAP_SERVER
-            value: localhost:29092
+            value: wallet-kafka-service.default.svc.cluster.local
         # - name: DB_HOST
         #   valueFrom:
         #     configMapKeyRef:
@@ -143,7 +143,7 @@ spec:
         #       key: DB_HOST
         ports:
         - containerPort:  8000
-          name:  wallet-api
+          # name:  wallet-api
         volumeMounts:
         - name: localtime
           mountPath: /etc/localtime
@@ -153,3 +153,164 @@ spec:
             path: /usr/share/zoneinfo/Asia/Taipei
       restartPolicy: Always
 ---
+# Deployment for WalletKafka Setup
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  wallet-kafka
+  namespace: default
+  labels:
+    app: wallet-kafka
+spec:
+  selector:
+    matchLabels:
+      app: wallet-kafka
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  wallet-kafka
+    spec:
+      # initContainers:
+        # Init containers are exactly like regular containers, except:
+          # - Init containers always run to completion.
+          # - Each init container must complete successfully before the next one starts.
+      containers:
+
+      - name:  wallet-kafka
+        image:  confluentinc/cp-kafka:6.1.1
+        imagePullPolicy: IfNotPresent
+
+        resources:
+          requests:
+            cpu: 500m
+            memory: 500Mi
+          limits:
+            cpu: 500m
+            memory: 500Mi
+
+        env:
+          - name: KAFKA_ZOOKEEPER_CONNECT
+            value: wallet-zookeeper-service.default.svc.cluster.local:2181
+
+          - name: KAFKA_ADVERTISED_LISTENERS
+            value: KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:29092
+
+          - name: KAFKA_BROKER_ID
+            value: "2"
+
+          - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+            value: "1"
+
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 5
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+
+        # readinessProbe:
+        #   httpGet:
+        #     path: /_status/healthz
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 2
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+
+        ports:
+        - containerPort:  29092
+          # name:  wallet-api
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Taipei
+      restartPolicy: Always
+
+---
+# Deployment for WalletKafka Setup
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  wallet-zookeeper
+  namespace: default
+  labels:
+    app: wallet-zookeeper
+spec:
+  selector:
+    matchLabels:
+      app: wallet-zookeeper
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  wallet-zookeeper
+    spec:
+      # initContainers:
+        # Init containers are exactly like regular containers, except:
+          # - Init containers always run to completion.
+          # - Each init container must complete successfully before the next one starts.
+      containers:
+
+      - name:  wallet-zookeeper
+        image:  bitnami/zookeeper:latest
+        imagePullPolicy: IfNotPresent
+
+        resources:
+          requests:
+            cpu: 500m
+            memory: 500Mi
+          limits:
+            cpu: 500m
+            memory: 500Mi
+
+        env:
+          - name: ALLOW_ANONYMOUS_LOGIN
+            value: "yes"
+
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 5
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+
+        # readinessProbe:
+        #   httpGet:
+        #     path: /_status/healthz
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 2
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+
+        ports:
+        - containerPort:  2181
+          # name:  wallet-api
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Taipei
+      restartPolicy: Always
