@@ -100,13 +100,13 @@ spec:
       - name:  wallet-api
         image: wallet-api-service
         imagePullPolicy: IfNotPresent
-        resources:
-          requests:
-            cpu: 500m
-            memory: 500Mi
-          limits:
-            cpu: 500m
-            memory: 500Mi
+        # resources:
+        #   requests:
+        #     cpu: 500m
+        #     memory: 500Mi
+        #   limits:
+        #     cpu: 500m
+        #     memory: 500Mi
         # livenessProbe:
         #   tcpSocket:
         #     port: 8000
@@ -186,17 +186,17 @@ spec:
         image:  confluentinc/cp-kafka:6.1.1
         imagePullPolicy: IfNotPresent
 
-        resources:
-          requests:
-            cpu: 500m
-            memory: 500Mi
-          limits:
-            cpu: 500m
-            memory: 500Mi
+        # resources:
+        #   requests:
+        #     cpu: 500m
+        #     memory: 500Mi
+        #   limits:
+        #     cpu: 500m
+        #     memory: 500Mi
 
         env:
           - name: KAFKA_ZOOKEEPER_CONNECT
-            value: wallet-zookeeper-service.default.svc.cluster.local:2181
+            value: wallet-zookeeper-service.default.svc.cluster.local
 
           - name: KAFKA_ADVERTISED_LISTENERS
             value: KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:29092
@@ -272,13 +272,13 @@ spec:
         image:  bitnami/zookeeper:latest
         imagePullPolicy: IfNotPresent
 
-        resources:
-          requests:
-            cpu: 500m
-            memory: 500Mi
-          limits:
-            cpu: 500m
-            memory: 500Mi
+        # resources:
+        #   requests:
+        #     cpu: 500m
+        #     memory: 500Mi
+        #   limits:
+        #     cpu: 500m
+        #     memory: 500Mi
 
         env:
           - name: ALLOW_ANONYMOUS_LOGIN
