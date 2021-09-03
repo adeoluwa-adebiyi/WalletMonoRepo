@@ -31,13 +31,13 @@ spec:
         image:  mongo
         imagePullPolicy: IfNotPresent
 
-        resources:
-          requests:
-            cpu: 500m
-            memory: 500Mi
-          limits:
-            cpu: 500m
-            memory: 500Mi
+        # resources:
+        #   requests:
+        #     cpu: 500m
+        #     memory: 500Mi
+        #   limits:
+        #     cpu: 500m
+        #     memory: 500Mi
 
         # livenessProbe:
         #   tcpSocket:
@@ -135,7 +135,7 @@ spec:
             value: "8000"
 
           - name: KAFKA_BOOTSTRAP_SERVER
-            value: wallet-kafka-service.default.svc.cluster.local:29092
+            value: wallet-kafka-service:29092
         # - name: DB_HOST
         #   valueFrom:
         #     configMapKeyRef:
@@ -176,6 +176,7 @@ spec:
       labels:
         app:  wallet-kafka
     spec:
+      hostname: wallet-kafka-service
       # initContainers:
         # Init containers are exactly like regular containers, except:
           # - Init containers always run to completion.
@@ -199,16 +200,19 @@ spec:
             value: wallet-zookeeper-service.default.svc.cluster.local:2181
 
           - name: KAFKA_ADVERTISED_LISTENERS
-            value: PLAINTEXT://wallet-kafka-service.default.svc.cluster.local:29092
+            value: PLAINTEXT://wallet-kafka-service:29092
 
-          - name: LISTENER_NAME
-            value: PLAINTEXT
+          - name: LISTERNERS
+            value: PLAINTEXT://0.0.0.0:29092
+
+          # - name: LISTENER_NAME
+          #   value: PLAINTEXT
 
           - name: ALLOW_PLAINTEXT_LISTENER
             value: "yes"
 
           - name: KAFKA_BROKER_ID
-            value: "2"
+            value: "1"
 
           - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
             value: "1"

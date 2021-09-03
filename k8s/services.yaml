@@ -39,11 +39,12 @@ metadata:
 spec:
   selector:
     app: wallet-kafka
-  type: LoadBalancer
+  type: NodePort
   ports:
   - name: wallet-kafka
     protocol: TCP
     port: 29092
+    targetPort: 29092
 ---
 
 
