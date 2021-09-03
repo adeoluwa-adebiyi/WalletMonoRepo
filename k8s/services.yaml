@@ -39,7 +39,7 @@ metadata:
 spec:
   selector:
     app: wallet-kafka
-  type: NodePort
+  type: LoadBalancer
   ports:
   - name: wallet-kafka
     protocol: TCP
