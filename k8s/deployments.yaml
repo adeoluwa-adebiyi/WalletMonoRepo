@@ -324,3 +324,306 @@ spec:
           hostPath:
             path: /usr/share/zoneinfo/Asia/Taipei
       restartPolicy: Always
+---
+# https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  supapay-finance
+  namespace: default
+  labels:
+    app:  supapay-finance
+spec:
+  selector:
+    matchLabels:
+      app: supapay-finance
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  supapay-finance
+    spec:
+      # initContainers:
+        # Init containers are exactly like regular containers, except:
+          # - Init containers always run to completion.
+          # - Each init container must complete successfully before the next one starts.
+      containers:
+      - name:  supapay-finance
+        image:  supapay-finance-service:latest
+        imagePullPolicy: IfNotPresent
+        # resources:
+        #   requests:
+        #     cpu: 100m
+        #     memory: 100Mi
+        #   limits:
+        #     cpu: 100m
+        #     memory: 100Mi
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 5
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+        # readinessProbe:
+        #   httpGet:
+        #     path: /_status/healthz
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 2
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+        env:
+          - name: APP_SECRET
+            value: mC51FshIdGDafgPuxnfXGLrzzlccbZKK
+
+          - name: DB_URL
+            value: mongodb://supapay-finance-db-service.default.svc.cluster.local/supapay_finance_db
+
+          - name: PORT
+            value: "8002"
+
+          - name: KAFKA_BOOTSTRAP_SERVER
+            value: wallet-kafka-service:29092
+        ports:
+        - containerPort:  8002
+          name:  supapay-finance
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Taipei
+      restartPolicy: Always
+---
+# Deployment for SupaPayFinanceDB
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  supapay-finance-db
+  namespace: default
+  labels:
+    app:  supapay-finance-db
+spec:
+  selector:
+    matchLabels:
+      app: supapay-finance-db
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  supapay-finance-db
+    spec:
+      # initContainers:
+        # Init containers are exactly like regular containers, except:
+          # - Init containers always run to completion.
+          # - Each init container must complete successfully before the next one starts.
+      containers:
+
+      - name:  supapay-finance-db
+        image:  mongo
+        imagePullPolicy: IfNotPresent
+
+        # resources:
+        #   requests:
+        #     cpu: 500m
+        #     memory: 500Mi
+        #   limits:
+        #     cpu: 500m
+        #     memory: 500Mi
+
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 5
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+
+        # readinessProbe:
+        #   httpGet:
+        #     path: /_status/healthz
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 2
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+
+        ports:
+        - containerPort:  27017
+          # name:  wallet-api
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Taipei
+      restartPolicy: Always
+---
+# https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  supapay-payment
+  namespace: default
+  labels:
+    app:  supapay-payment
+spec:
+  selector:
+    matchLabels:
+      app: supapay-payment
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  supapay-payment
+    spec:
+      # initContainers:
+        # Init containers are exactly like regular containers, except:
+          # - Init containers always run to completion.
+          # - Each init container must complete successfully before the next one starts.
+      containers:
+      - name:  supapay-payment
+        image:  supapay-payment-service:latest
+        imagePullPolicy: IfNotPresent
+        # resources:
+        #   requests:
+        #     cpu: 100m
+        #     memory: 100Mi
+        #   limits:
+        #     cpu: 100m
+        #     memory: 100Mi
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 5
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+        # readinessProbe:
+        #   httpGet:
+        #     path: /_status/healthz
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 2
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+        env:
+          - name: APP_SECRET
+            value: mC51FshIdGDafgPuxnfXGLrzzlccbZKK
+
+          - name: DB_URL
+            value: mongodb://supapay-payment-db-service.default.svc.cluster.local/supapay_payment_db
+
+          - name: PORT
+            value: "8001"
+
+          - name: KAFKA_BOOTSTRAP_SERVER
+            value: wallet-kafka-service:29092
+        ports:
+        - containerPort:  8001
+          name:  supapay-payment
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Taipei
+      restartPolicy: Always
+---
+# Deployment for SupapayPaymentDB
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  supapay-payment-db
+  namespace: default
+  labels:
+    app:  supapay-payment-db
+spec:
+  selector:
+    matchLabels:
+      app: supapay-payment-db
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  supapay-payment-db
+    spec:
+      # initContainers:
+        # Init containers are exactly like regular containers, except:
+          # - Init containers always run to completion.
+          # - Each init container must complete successfully before the next one starts.
+      containers:
+
+      - name:  supapay-payment-db
+        image:  mongo
+        imagePullPolicy: IfNotPresent
+
+        # resources:
+        #   requests:
+        #     cpu: 500m
+        #     memory: 500Mi
+        #   limits:
+        #     cpu: 500m
+        #     memory: 500Mi
+
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 5
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+
+        # readinessProbe:
+        #   httpGet:
+        #     path: /_status/healthz
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 2
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+
+        ports:
+        - containerPort:  27017
+          # name:  wallet-api
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Taipei
+      restartPolicy: Always
+---

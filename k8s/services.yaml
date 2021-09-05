@@ -1,3 +1,6 @@
+
+# --- SupaPay Wallets
+
 # https://kubernetes.io/docs/concepts/services-networking/service/
 apiVersion: v1
 kind: Service
@@ -30,6 +33,8 @@ spec:
     port: 27017
 ---
 
+# --- SupaPay Neural Link
+
 # https://kubernetes.io/docs/concepts/services-networking/service/
 apiVersion: v1
 kind: Service
@@ -47,6 +52,7 @@ spec:
     targetPort: 29092
 ---
 
+# --- SupaPay Neural Link Coordinator
 
 # https://kubernetes.io/docs/concepts/services-networking/service/
 apiVersion: v1
@@ -64,18 +70,70 @@ spec:
     port: 2181
 ---
 
+# ---- SupaPay Finance
+
 # https://kubernetes.io/docs/concepts/services-networking/service/
 apiVersion: v1
 kind: Service
 metadata:
-  name: wordpress-srvice
+  name: supapay-finance-db-service
   namespace: default
 spec:
   selector:
-    app: wordpress
+    app: supapay-finance-db
   type: LoadBalancer
   ports:
-  - name: wordpress-srvice
+  - name: supapay-finance-db
     protocol: TCP
-    port: 80
+    port: 27017
+---
+
+# https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: supapay-finance-service
+  namespace: default
+spec:
+  selector:
+    app: supapay-finance
+  type: ClusterIP
+  ports:
+  - name: supapay-finance-service
+    protocol: TCP
+    port: 8002
+---
+
+# ---- SupaPay Payments
+
+# https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: supapay-payment-db-service
+  namespace: default
+spec:
+  selector:
+    app: supapay-payment-db
+  type: LoadBalancer
+  ports:
+  - name: supapay-payment-db
+    protocol: TCP
+    port: 27017
+---
+
+# https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: supapay-payment-service
+  namespace: default
+spec:
+  selector:
+    app: supapay-payment
+  type: LoadBalancer
+  ports:
+  - name: supapay-payment-service
+    protocol: TCP
+    port: 8001
 ---

@@ -8,7 +8,7 @@ metadata:
   namespace: default
 spec:
   rules:
-  - host: hexagon.com
+  - host: supapay.com
     http:
       paths:
       - path: /api/wallet(/|$)(.*)
@@ -19,11 +19,11 @@ spec:
             port:
               number: 8000
 
-      - path: /blog
-        pathType: Prefix
-        backend:
-          service:
-            name: wordpress-service
-            port:
-              number: 80
+      # - path: /blog
+      #   pathType: Prefix
+      #   backend:
+      #     service:
+      #       name: wordpress-service
+      #       port:
+      #         number: 80
 ---
