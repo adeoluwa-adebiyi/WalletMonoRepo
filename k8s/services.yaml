@@ -6,7 +6,7 @@ metadata:
   namespace: default
 spec:
   selector:
-    app: wallet-api-service
+    app: wallet-api
   type: LoadBalancer
   ports:
   - name: wallet-api
