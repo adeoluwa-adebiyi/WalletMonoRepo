@@ -63,3 +63,19 @@ spec:
     protocol: TCP
     port: 2181
 ---
+
+# https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: wordpress-srvice
+  namespace: default
+spec:
+  selector:
+    app: wordpress
+  type: LoadBalancer
+  ports:
+  - name: wordpress-srvice
+    protocol: TCP
+    port: 80
+---
