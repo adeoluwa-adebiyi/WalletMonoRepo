@@ -543,6 +543,16 @@ spec:
 
           - name: KAFKA_BOOTSTRAP_SERVER
             value: wallet-kafka-service:29092
+
+          - name: FLUTTERWAVE_PUB_KEY
+            value: FLWPUBK_TEST-dea99fa3c77235b11ca9ad7bdd3d09e7-X
+
+          - name: FLUTTERWAVE_SECRET_KEY
+            value: FLWSECK_TEST-8c5d90852c49d0d37e2f22fc422d963c-X
+          
+          - name: FL_ENCKEY
+            value: FLWSECK_TEST7cb4a721eb9e
+            
         ports:
         - containerPort:  8001
           name:  supapay-payment

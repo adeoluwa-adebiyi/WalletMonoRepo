@@ -19,6 +19,22 @@ spec:
             port:
               number: 8000
 
+      - path: /api/payment(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: supapay-payment-service
+            port:
+              number: 8001
+
+      - path: /api/finance(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: supapay-finance-service
+            port:
+              number: 8002
+
       # - path: /blog
       #   pathType: Prefix
       #   backend:
