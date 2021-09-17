@@ -35,6 +35,14 @@ spec:
             port:
               number: 8002
 
+      - path: /api/transfer(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: supapay-transfer-service
+            port:
+              number: 8003
+
       # - path: /blog
       #   pathType: Prefix
       #   backend:
