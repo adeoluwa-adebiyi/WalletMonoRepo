@@ -1,0 +1,6 @@
+#!/usr/bin/sh
+eval $(minikube docker-env)
+docker build projects/WalletAPIService -t wallet-api-service
+docker build projects/WalletPaymentService -t supapay-payment-service
+docker build projects/WalletFinanceService -t supapay-finance-service
+docker build projects/WalletTransferService -t supapay-transfer-service
