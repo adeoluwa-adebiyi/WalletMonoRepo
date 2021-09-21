@@ -1,0 +1,4 @@
+#!/bin/bash
+
+eval $(minikube docker-env)
+docker image rm wallet-api-service supapay-payment-service supapay-finance-service supapay-transfer-service
