@@ -35,7 +35,7 @@ spec:
             port:
               number: 8002
 
-      - path: /api/transfer(/|$)(.*)
+      - path: /api/transfers(/|$)(.*)
         pathType: Prefix
         backend:
           service:

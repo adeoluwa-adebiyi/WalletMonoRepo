@@ -137,3 +137,36 @@ spec:
     protocol: TCP
     port: 8001
 ---
+
+### Transfer Service
+# https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: supapay-transfer-service
+  namespace: default
+spec:
+  selector:
+    app: supapay-transfer
+  type: LoadBalancer
+  ports:
+  - name: supapay-transfer-service
+    protocol: TCP
+    port: 8003
+---
+
+# https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: supapay-transfer-db-service
+  namespace: default
+spec:
+  selector:
+    app: supapay-transfer-db
+  type: LoadBalancer
+  ports:
+  - name: supapay-transfer-db-service
+    protocol: TCP
+    port: 27017
+---
