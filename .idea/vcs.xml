@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/projects/WalletAPIService" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/projects/WalletFinanceService" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/projects/WalletMonoKafkaService" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/projects/WalletPaymentService" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/projects/WalletTransferService" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/projects/WalletWebApp" vcs="Git" />
+  </component>
+</project>

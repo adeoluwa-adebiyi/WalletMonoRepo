@@ -1,0 +1,53 @@
+# https://kubernetes.io/docs/concepts/services-networking/ingress/
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  name: wallet-ingress
+  namespace: default
+spec:
+  rules:
+  - host: supapay.com
+    http:
+      paths:
+      - path: /api/wallet(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: wallet-api-service
+            port:
+              number: 8000
+
+      - path: /api/payment(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: supapay-payment-service
+            port:
+              number: 8001
+
+      - path: /api/finance(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: supapay-finance-service
+            port:
+              number: 8002
+
+      - path: /api/transfers(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: supapay-transfer-service
+            port:
+              number: 8003
+
+      # - path: /blog
+      #   pathType: Prefix
+      #   backend:
+      #     service:
+      #       name: wordpress-service
+      #       port:
+      #         number: 80
+---

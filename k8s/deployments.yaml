@@ -1,0 +1,802 @@
+# Deployment for WalletAPIDB
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  wallet-api-db
+  namespace: default
+  labels:
+    app:  wallet-api-db
+spec:
+  selector:
+    matchLabels:
+      app: wallet-api-db
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  wallet-api-db
+    spec:
+      # initContainers:
+        # Init containers are exactly like regular containers, except:
+          # - Init containers always run to completion.
+          # - Each init container must complete successfully before the next one starts.
+      containers:
+
+      - name:  wallet-api-db
+        image:  mongo
+        imagePullPolicy: IfNotPresent
+
+        # resources:
+        #   requests:
+        #     cpu: 500m
+        #     memory: 500Mi
+        #   limits:
+        #     cpu: 500m
+        #     memory: 500Mi
+
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 5
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+
+        # readinessProbe:
+        #   httpGet:
+        #     path: /_status/healthz
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 2
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+
+        ports:
+        - containerPort:  27017
+          # name:  wallet-api
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Taipei
+      restartPolicy: Always
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  wallet-api
+  namespace: default
+  labels:
+    app:  wallet-api
+spec:
+  selector:
+    matchLabels:
+      app: wallet-api
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  wallet-api
+    spec:
+      # initContainers:
+        # Init containers are exactly like regular containers, except:
+          # - Init containers always run to completion.
+          # - Each init container must complete successfully before the next one starts.
+      containers:
+      - name:  wallet-api
+        image: wallet-api-service:latest
+        imagePullPolicy: Never
+        # resources:
+        #   requests:
+        #     cpu: 500m
+        #     memory: 500Mi
+        #   limits:
+        #     cpu: 500m
+        #     memory: 500Mi
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: 8000
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 5
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+        # readinessProbe:
+        #   httpGet:
+        #     path: /_status/healthz
+        #     port: 8000
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 2
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+        env:
+          - name: APP_SECRET
+            value: mC51FshIdGDafgPuxnfXGLrzzlccbZKK
+
+          - name: DB_URL
+            value: mongodb://wallet-api-db-service.default.svc.cluster.local/wallet_service_db
+
+          - name: PORT
+            value: "8000"
+
+          - name: KAFKA_BOOTSTRAP_SERVER
+            value: wallet-kafka-service:29092
+        # - name: DB_HOST
+        #   valueFrom:
+        #     configMapKeyRef:
+        #       name: wallet-api
+        #       key: DB_HOST
+        ports:
+        - containerPort:  8000
+          # name:  wallet-api
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Taipei
+      restartPolicy: Always
+---
+# Deployment for WalletKafka Setup
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  wallet-kafka
+  namespace: default
+  labels:
+    app: wallet-kafka
+spec:
+  selector:
+    matchLabels:
+      app: wallet-kafka
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  wallet-kafka
+    spec:
+      hostname: wallet-kafka-service
+      # initContainers:
+        # Init containers are exactly like regular containers, except:
+          # - Init containers always run to completion.
+          # - Each init container must complete successfully before the next one starts.
+      containers:
+
+      - name:  wallet-kafka
+        image:  confluentinc/cp-kafka:6.1.1
+        imagePullPolicy: IfNotPresent
+
+        # resources:
+        #   requests:
+        #     cpu: 500m
+        #     memory: 500Mi
+        #   limits:
+        #     cpu: 500m
+        #     memory: 500Mi
+
+        env:
+          - name: KAFKA_ZOOKEEPER_CONNECT
+            value: wallet-zookeeper-service.default.svc.cluster.local:2181
+
+          - name: KAFKA_ADVERTISED_LISTENERS
+            value: PLAINTEXT://wallet-kafka-service:29092
+
+          - name: LISTERNERS
+            value: PLAINTEXT://0.0.0.0:29092
+
+          # - name: LISTENER_NAME
+          #   value: PLAINTEXT
+
+          - name: ALLOW_PLAINTEXT_LISTENER
+            value: "yes"
+
+          - name: KAFKA_BROKER_ID
+            value: "1"
+
+          - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+            value: "1"
+
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 5
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+
+        # readinessProbe:
+        #   httpGet:
+        #     path: /_status/healthz
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 2
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+
+        ports:
+        - containerPort:  29092
+          # name:  wallet-api
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Taipei
+      restartPolicy: Always
+
+---
+# Deployment for WalletKafka Setup
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  wallet-zookeeper
+  namespace: default
+  labels:
+    app: wallet-zookeeper
+spec:
+  selector:
+    matchLabels:
+      app: wallet-zookeeper
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  wallet-zookeeper
+    spec:
+      # initContainers:
+        # Init containers are exactly like regular containers, except:
+          # - Init containers always run to completion.
+          # - Each init container must complete successfully before the next one starts.
+      containers:
+
+      - name:  wallet-zookeeper
+        image:  bitnami/zookeeper:latest
+        imagePullPolicy: IfNotPresent
+
+        # resources:
+        #   requests:
+        #     cpu: 500m
+        #     memory: 500Mi
+        #   limits:
+        #     cpu: 500m
+        #     memory: 500Mi
+
+        env:
+          - name: ALLOW_ANONYMOUS_LOGIN
+            value: "yes"
+
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 5
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+
+        # readinessProbe:
+        #   httpGet:
+        #     path: /_status/healthz
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 2
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+
+        ports:
+        - containerPort:  2181
+          # name:  wallet-api
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Taipei
+      restartPolicy: Always
+---
+# https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  supapay-finance
+  namespace: default
+  labels:
+    app:  supapay-finance
+spec:
+  selector:
+    matchLabels:
+      app: supapay-finance
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  supapay-finance
+    spec:
+      # initContainers:
+        # Init containers are exactly like regular containers, except:
+          # - Init containers always run to completion.
+          # - Each init container must complete successfully before the next one starts.
+      containers:
+      - name:  supapay-finance
+        image:  supapay-finance-service:latest
+        imagePullPolicy: IfNotPresent
+        # resources:
+        #   requests:
+        #     cpu: 100m
+        #     memory: 100Mi
+        #   limits:
+        #     cpu: 100m
+        #     memory: 100Mi
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 5
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+        # readinessProbe:
+        #   httpGet:
+        #     path: /_status/healthz
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 2
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+        env:
+          - name: APP_SECRET
+            value: mC51FshIdGDafgPuxnfXGLrzzlccbZKK
+
+          - name: DB_URL
+            value: mongodb://supapay-finance-db-service.default.svc.cluster.local/supapay_finance_db
+
+          - name: PORT
+            value: "8002"
+
+          - name: KAFKA_BOOTSTRAP_SERVER
+            value: wallet-kafka-service:29092
+        ports:
+        - containerPort:  8002
+          name:  supapay-finance
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Taipei
+      restartPolicy: Always
+---
+# Deployment for SupaPayFinanceDB
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  supapay-finance-db
+  namespace: default
+  labels:
+    app:  supapay-finance-db
+spec:
+  selector:
+    matchLabels:
+      app: supapay-finance-db
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  supapay-finance-db
+    spec:
+      # initContainers:
+        # Init containers are exactly like regular containers, except:
+          # - Init containers always run to completion.
+          # - Each init container must complete successfully before the next one starts.
+      containers:
+
+      - name:  supapay-finance-db
+        image:  mongo
+        imagePullPolicy: IfNotPresent
+
+        # resources:
+        #   requests:
+        #     cpu: 500m
+        #     memory: 500Mi
+        #   limits:
+        #     cpu: 500m
+        #     memory: 500Mi
+
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 5
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+
+        # readinessProbe:
+        #   httpGet:
+        #     path: /_status/healthz
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 2
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+
+        ports:
+        - containerPort:  27017
+          # name:  wallet-api
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Taipei
+      restartPolicy: Always
+---
+# https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  supapay-payment
+  namespace: default
+  labels:
+    app:  supapay-payment
+spec:
+  selector:
+    matchLabels:
+      app: supapay-payment
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  supapay-payment
+    spec:
+      # initContainers:
+        # Init containers are exactly like regular containers, except:
+          # - Init containers always run to completion.
+          # - Each init container must complete successfully before the next one starts.
+      containers:
+      - name:  supapay-payment
+        image:  supapay-payment-service:latest
+        imagePullPolicy: IfNotPresent
+        # resources:
+        #   requests:
+        #     cpu: 100m
+        #     memory: 100Mi
+        #   limits:
+        #     cpu: 100m
+        #     memory: 100Mi
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 5
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+        # readinessProbe:
+        #   httpGet:
+        #     path: /_status/healthz
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 2
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+        env:
+          - name: APP_SECRET
+            value: mC51FshIdGDafgPuxnfXGLrzzlccbZKK
+
+          - name: DB_URL
+            value: mongodb://supapay-payment-db-service.default.svc.cluster.local/supapay_payment_db
+
+          - name: PORT
+            value: "8001"
+
+          - name: KAFKA_BOOTSTRAP_SERVER
+            value: wallet-kafka-service:29092
+
+          - name: FLUTTERWAVE_PUB_KEY
+            value: FLWPUBK_TEST-dea99fa3c77235b11ca9ad7bdd3d09e7-X
+
+          - name: FLUTTERWAVE_SECRET_KEY
+            value: FLWSECK_TEST-8c5d90852c49d0d37e2f22fc422d963c-X
+          
+          - name: FL_ENCKEY
+            value: FLWSECK_TEST7cb4a721eb9e
+
+          - name: WALLETS_AFRICA_SECRET_KEY
+            value: hfucj5jatq8h
+            
+          - name: WALLETS_AFRICA_PUB_KEY
+            value: uvjqzm5xl6bw
+            
+        ports:
+        - containerPort:  8001
+          name:  supapay-payment
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Taipei
+      restartPolicy: Always
+---
+# Deployment for SupapayPaymentDB
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  supapay-payment-db
+  namespace: default
+  labels:
+    app:  supapay-payment-db
+spec:
+  selector:
+    matchLabels:
+      app: supapay-payment-db
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  supapay-payment-db
+    spec:
+      # initContainers:
+        # Init containers are exactly like regular containers, except:
+          # - Init containers always run to completion.
+          # - Each init container must complete successfully before the next one starts.
+      containers:
+
+      - name:  supapay-payment-db
+        image:  mongo
+        imagePullPolicy: IfNotPresent
+
+        # resources:
+        #   requests:
+        #     cpu: 500m
+        #     memory: 500Mi
+        #   limits:
+        #     cpu: 500m
+        #     memory: 500Mi
+
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 5
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+
+        # readinessProbe:
+        #   httpGet:
+        #     path: /_status/healthz
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 2
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+
+        ports:
+        - containerPort:  27017
+          # name:  wallet-api
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Taipei
+      restartPolicy: Always
+---
+
+
+
+####Transfer
+---
+# https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  supapay-transfer
+  namespace: default
+  labels:
+    app:  supapay-transfer
+spec:
+  selector:
+    matchLabels:
+      app: supapay-transfer
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  supapay-transfer
+    spec:
+      # initContainers:
+        # Init containers are exactly like regular containers, except:
+          # - Init containers always run to completion.
+          # - Each init container must complete successfully before the next one starts.
+      containers:
+      - name: supapay-transfer
+        image: supapay-transfer-service:latest
+        imagePullPolicy: IfNotPresent
+        # resources:
+        #   requests:
+        #     cpu: 100m
+        #     memory: 100Mi
+        #   limits:
+        #     cpu: 100m
+        #     memory: 100Mi
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 5
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+        # readinessProbe:
+        #   httpGet:
+        #     path: /_status/healthz
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 2
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+        env:
+          - name: APP_SECRET
+            value: mC51FshIdGDafgPuxnfXGLrzzlccbZKK
+
+          - name: DB_URL
+            value: mongodb://supapay-transfer-db-service.default.svc.cluster.local/supapay_transfer_db
+
+          - name: PORT
+            value: "8003"
+
+          - name: KAFKA_BOOTSTRAP_SERVER
+            value: wallet-kafka-service:29092
+            
+        ports:
+        - containerPort:  8003
+
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Taipei
+      restartPolicy: Always
+---
+# Deployment for SupapayPaymentDB
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  supapay-transfer-db
+  namespace: default
+  labels:
+    app:  supapay-transfer-db
+spec:
+  selector:
+    matchLabels:
+      app: supapay-transfer-db
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  supapay-transfer-db
+    spec:
+      # initContainers:
+        # Init containers are exactly like regular containers, except:
+          # - Init containers always run to completion.
+          # - Each init container must complete successfully before the next one starts.
+      containers:
+
+      - name:  supapay-transfer-db
+        image:  mongo
+        imagePullPolicy: IfNotPresent
+
+        # resources:
+        #   requests:
+        #     cpu: 500m
+        #     memory: 500Mi
+        #   limits:
+        #     cpu: 500m
+        #     memory: 500Mi
+
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 5
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+
+        # readinessProbe:
+        #   httpGet:
+        #     path: /_status/healthz
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 2
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+
+        ports:
+        - containerPort:  27017
+          # name:  wallet-api
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Taipei
+      restartPolicy: Always
+---

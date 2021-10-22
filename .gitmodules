@@ -1,9 +1,21 @@
 [submodule "projects/WalletAPIService"]
 	path = projects/WalletAPIService
-	url = https://github.com/adeoluwa-adebiyi/WalletAPIService
+	url = git@github.com:adeoluwa-adebiyi/WalletAPIService.git
 [submodule "projects/WalletPaymentService"]
 	path = projects/WalletPaymentService
-	url = https://github.com/adeoluwa-adebiyi/WalletPaymentService
+	url = git@github.com:adeoluwa-adebiyi/WalletPaymentService.git
 [submodule "projects/WalletAPIServiceBackend"]
 	path = projects/WalletAPIServiceBackend
-	url = https://github.com/adeoluwa-adebiyi/WalletAPIServiceBackend
+	url = git@github.com:adeoluwa-adebiyi/WalletAPIServiceBackend.git
+[submodule "projects/WalletMonoKafkaService"]
+	path = projects/WalletMonoKafkaService
+	url = git@github.com:adeoluwa-adebiyi/WalletMonoKafkaService.git
+[submodule "projects/WalletFinanceService"]
+	path = projects/WalletFinanceService
+	url = git@github.com:adeoluwa-adebiyi/WalletFinanceService.git
+[submodule "projects/WalletTransferService"]
+	path = projects/WalletTransferService
+	url = git@github.com:adeoluwa-adebiyi/WalletTransferService.git
+[submodule "projects/WalletWebApp"]
+	path = projects/WalletWebApp
+	url = git@github.com:adeoluwa-adebiyi/WalletWebApp.git

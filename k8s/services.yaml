@@ -1,0 +1,172 @@
+
+# --- SupaPay Wallets
+
+# https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: wallet-api-service
+  namespace: default
+spec:
+  selector:
+    app: wallet-api
+  type: LoadBalancer
+  ports:
+  - name: wallet-api
+    protocol: TCP
+    port: 8000
+---
+
+# https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: wallet-api-db-service
+  namespace: default
+spec:
+  selector:
+    app: wallet-api-db
+  type: LoadBalancer
+  ports:
+  - name: wallet-api-db
+    protocol: TCP
+    port: 27017
+---
+
+# --- SupaPay Neural Link
+
+# https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: wallet-kafka-service
+  namespace: default
+spec:
+  selector:
+    app: wallet-kafka
+  type: LoadBalancer
+  ports:
+  - name: wallet-kafka
+    protocol: TCP
+    port: 29092
+    targetPort: 29092
+---
+
+# --- SupaPay Neural Link Coordinator
+
+# https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: wallet-zookeeper-service
+  namespace: default
+spec:
+  selector:
+    app: wallet-zookeeper
+  type: LoadBalancer
+  ports:
+  - name: wallet-zookeeper
+    protocol: TCP
+    port: 2181
+---
+
+# ---- SupaPay Finance
+
+# https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: supapay-finance-db-service
+  namespace: default
+spec:
+  selector:
+    app: supapay-finance-db
+  type: LoadBalancer
+  ports:
+  - name: supapay-finance-db
+    protocol: TCP
+    port: 27017
+---
+
+# https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: supapay-finance-service
+  namespace: default
+spec:
+  selector:
+    app: supapay-finance
+  type: ClusterIP
+  ports:
+  - name: supapay-finance-service
+    protocol: TCP
+    port: 8002
+---
+
+# ---- SupaPay Payments
+
+# https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: supapay-payment-db-service
+  namespace: default
+spec:
+  selector:
+    app: supapay-payment-db
+  type: LoadBalancer
+  ports:
+  - name: supapay-payment-db
+    protocol: TCP
+    port: 27017
+---
+
+# https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: supapay-payment-service
+  namespace: default
+spec:
+  selector:
+    app: supapay-payment
+  type: LoadBalancer
+  ports:
+  - name: supapay-payment-service
+    protocol: TCP
+    port: 8001
+---
+
+### Transfer Service
+# https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: supapay-transfer-service
+  namespace: default
+spec:
+  selector:
+    app: supapay-transfer
+  type: LoadBalancer
+  ports:
+  - name: supapay-transfer-service
+    protocol: TCP
+    port: 8003
+---
+
+# https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: supapay-transfer-db-service
+  namespace: default
+spec:
+  selector:
+    app: supapay-transfer-db
+  type: LoadBalancer
+  ports:
+  - name: supapay-transfer-db-service
+    protocol: TCP
+    port: 27017
+---
